@@ -1,0 +1,34 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "==4.1.3"
+djangorestframework = "*"
+django-allauth = "*"
+dj-rest-auth = "==2.2.5"
+django-cors-headers = "*"
+django-environ = "*"
+psycopg2-binary = "*"
+faker = "*"
+redis = "*"
+celery = "*"
+django-filter = "*"
+flower = "*"
+pillow = "*"
+weasyprint = "*"
+docusign-esign = "*"
+install = "*"
+django-activity-stream = "*"
+channels = "*"
+channels-redis = "*"
+daphne = "*"
+gunicorn = "*"
+stripe = "*"
+
+[dev-packages]
+django-extensions = "*"
+
+[requires]
+python_version = "3.10"

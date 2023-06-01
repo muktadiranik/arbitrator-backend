@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Termsheet</title>
+</head>
+<body>
+<div style="position: relative; left: 10%; color: #40a9ff;">
+    <h1>
+        {{termsheet.title}}
+    </h1>
+</div>
+<div>
+    Respondent Name: {{respondent_name}}
+</div>
+<div>
+    Claimer Name: {{claimer_name}}
+</div>
+<div>
+    Dispute Code: {{dispute_code}}
+</div>
+<br/>
+{% for section in termsheet.sections.all %}
+<div style="border: 1px solid gray;">
+    <strong>{{ section.title}}</strong>
+    <p>{{ section.text | striptags }} </p>
+</div>
+<br>
+{% endfor %}
+<div class="u-row-container" style="padding: 0px;background-color: transparent">
+    <div class="u-row"
+         style="Margin: 0 auto;min-width: 320px;max-width: 600px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;">
+        <div style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
+
+            <div class="u-col u-col-100"
+                 style="max-width: 320px;min-width: 600px;display: table-cell;vertical-align: top;">
+                <div style="height: 100%;width: 100% !important;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;">
+
+                    <div style="box-sizing: border-box; height: 100%; padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;">
+
+                        <table style="font-family:arial,helvetica,sans-serif;" role="presentation"
+                               cellpadding="0" cellspacing="0" width="100%" border="0">
+                            <tbody>
+                            <tr>
+                                <td style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:arial,helvetica,sans-serif;"
+                                    align="left">
+
+                                    <div style="font-size: 13px; line-height: 140%; text-align: left; word-wrap: break-word;">
+                                        <p style="line-height: 140%;"> </p>
+                                        <p style="line-height: 140%;"><span
+                                                style="line-height: 18.2px;"><span
+                                                style="text-decoration: underline; line-height: 18.2px;">______________________</span><span
+                                                style="line-height: 18.2px;"> </span>                     </span><span
+                                                style="text-decoration: underline; line-height: 18.2px;">______________________</span>
+                                        </p>
+                                        <p style="line-height: 140%;">              (claimer)               
+                                                                                (Respondent)</p>
+                                        <p style="line-height: 140%;"> </p>
+                                    </div>
+
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

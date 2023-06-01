@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  arbitrator-backend-dev:
+    build: .
+    ports:
+      - 8079:8000
+    restart: always
+    image: projectsra/arbitrator-backend:dev

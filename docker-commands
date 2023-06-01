@@ -1,0 +1,47 @@
+### This is the command to run docker container for Postgresql version 14.5
+# This command provide some environment variables that Postgresql image/container requires defined in the
+# environment variable file. Also the volume has been mapped to persist the data even when the container is restarted
+# or has been rerun from the image
+docker run -d -p 5433:5432 --restart always --name arbitrator-db --env-file ./config/.env.arbitrator.db \
+-v arbitrator_postgres_data:/var/lib/postgresql/data postgres:14.5
+
+
+### Arbitrator Dev Container for running on Digital Ocean
+# Build the docker image with this command
+docker build -t projectsra/arbitrator-backend:dev .
+
+# Push the docker image to docker hub
+docker push projectsra/arbitrator-backend:dev
+
+# Run the container on the server
+docker stop arbitrator-backend-dev && \
+docker rm arbitrator-backend-dev && \
+docker pull projectsra/arbitrator-backend:dev && \
+docker run -d -p 8079:8000 --restart always --env-file ./config/.env.arbitrator --name arbitrator-backend-dev projectsra/arbitrator-backend:dev
+
+
+### Command to run arbitrator-dev container on local machine
+docker build -t arbitrator:dev .
+docker run -d -p 8079:8000 --restart always --env-file ./config/.env.arbitrator --name arbitrator-dev arbitrator:dev
+
+
+### Run project using Docker Compose on the Server
+# Build the docker image with this command
+docker build -t projectsra/arbitrator-backend:dev .
+
+# Push the docker image to docker hub
+docker push projectsra/arbitrator-backend:dev
+
+# Bring up all the containers on the server using docker compose
+docker compose -f docker-compose-scripts/arbitration/docker-compose.yml down && \
+docker compose -f docker-compose-scripts/arbitration/docker-compose.yml pull && \
+docker compose -f docker-compose-scripts/arbitration/docker-compose.yml --env-file ./config/.env.arbitrator up -d
+
+
+### Run project using Docker Compose on Local Machine
+docker compose -f docker-compose.dev.local.yml down && \
+docker compose -f docker-compose.dev.local.yml --env-file ./config/.env.arbitrator up -d
+
+
+
+

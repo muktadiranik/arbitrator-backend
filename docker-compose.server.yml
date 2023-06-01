@@ -1,0 +1,135 @@
+version: "3.8"
+
+services:
+  arbitrator-backend-dev-redis:
+    image: redis:7.0-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    ports:
+      - 6379:6379
+    restart: always
+    environment:
+      - REDIS_PASSWORD
+
+  arbitrator-backend-dev:
+    build: .
+    image: projectsra/arbitrator-backend:dev
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8079:8000
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE
+      - SECRET_KEY
+      - REDIS_PASSWORD
+      - SENDGRID_API_KEY
+      - FROM_EMAIL
+      - DATABASE_NAME
+      - DATABASE_USER
+      - DATABASE_PASSWORD
+      - DATABASE_HOST
+      - DATABASE_PORT
+      - EMAIL_HOST_PASSWORD
+      - FROM_TEST_EMAIL
+    volumes:
+      - /home/backend/prod/media:/app/media
+      - /home/backend/prod/static:/app/staticfiles
+
+  arbitrator-websocket-backend-dev:
+    build: .
+    image: projectsra/arbitrator-backend:dev
+    command: daphne Arbitrator.asgi:application --port 8000
+    ports:
+      - 8078:8000
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE
+      - SECRET_KEY
+      - REDIS_PASSWORD
+      - SENDGRID_API_KEY
+      - FROM_EMAIL
+      - DATABASE_NAME
+      - DATABASE_USER
+      - DATABASE_PASSWORD
+      - DATABASE_HOST
+      - DATABASE_PORT
+      - EMAIL_HOST_PASSWORD
+      - FROM_TEST_EMAIL
+    volumes:
+      - /home/backend/prod/media:/app/media
+      - /home/backend/prod/static:/app/staticfiles
+
+  arbitrator-backend-dev-celery:
+    image: projectsra/arbitrator-backend:dev
+    volumes:
+      - /home/backend/prod/media:/app/media
+      - /home/ubuntu/config/pem_file:/app/docusign/pem_file
+    command: celery -A Arbitrator worker --loglevel=info
+    depends_on:
+      - arbitrator-backend-dev-redis
+    environment:
+      - DJANGO_SETTINGS_MODULE
+      - SECRET_KEY
+      - REDIS_PASSWORD
+      - SENDGRID_API_KEY
+      - FROM_EMAIL
+      - DATABASE_NAME
+      - DATABASE_USER
+      - DATABASE_PASSWORD
+      - DATABASE_HOST
+      - DATABASE_PORT
+      - EMAIL_HOST_PASSWORD
+      - FROM_TEST_EMAIL
+      - DOCUSIGN_AUTH_SERVER
+      - DOCUSIGN_CLIENT_ID
+      - DOCUSIGN_USER_ID
+
+  arbitrator-backend-dev-celery-beat:
+    image: projectsra/arbitrator-backend:dev
+    command: celery -A Arbitrator beat --loglevel=info
+    depends_on:
+      - arbitrator-backend-dev-redis
+    environment:
+      - DJANGO_SETTINGS_MODULE
+      - SECRET_KEY
+      - REDIS_PASSWORD
+      - SENDGRID_API_KEY
+      - FROM_EMAIL
+      - DATABASE_NAME
+      - DATABASE_USER
+      - DATABASE_PASSWORD
+      - DATABASE_HOST
+      - DATABASE_PORT
+
+  arbitrator-backend-dev-flower:
+    image: projectsra/arbitrator-backend:dev
+
+    # Simple command to start flower, was not working properly in docker compose
+    #    command: celery -A Arbitrator flower
+
+    #   Applied sleep here because flower does not work properly if celery has not completely started, hence a 5 sceond delay is added
+    command:
+      - '/bin/sh'
+      - '-c'
+      - '/bin/sleep 5 && celery -A Arbitrator flower'
+    #    Above command can be written as
+    #    command: /bin/sh -c  "/bin/sleep 5 && celery -A Arbitrator flower"
+    depends_on:
+      - arbitrator-backend-dev
+      - arbitrator-backend-dev-redis
+      - arbitrator-backend-dev-celery
+    environment:
+      - DEBUG=0
+      - CELERY_BROKER=redis://:${REDIS_PASSWORD}@arbitrator-backend-dev-redis:6379/1
+      #      - CELERY_BACKEND=redis://:${REDIS_PASSWORD}@arbitrator-backend-dev-redis:6379/1
+      - DJANGO_SETTINGS_MODULE
+      - SECRET_KEY
+      - REDIS_PASSWORD
+      - SENDGRID_API_KEY
+      - FROM_EMAIL
+      - DATABASE_NAME
+      - DATABASE_USER
+      - DATABASE_PASSWORD
+      - DATABASE_HOST
+      - DATABASE_PORT
+    ports:
+      - 5555:5555
